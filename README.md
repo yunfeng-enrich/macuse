@@ -12,7 +12,7 @@ keep-awake, and a permissions preflight.
 
 ```
 brew install cloudflared
-uv tool install git+https://github.com/<you>/macuse   # or: pipx install ...
+uv tool install git+https://github.com/yunfeng-enrich/macuse   # or: pipx install ...
 macuse up
 ```
 
