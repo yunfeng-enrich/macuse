@@ -1,0 +1,22 @@
+[project]
+name = "macuse"
+version = "0.1.0"
+description = "Turn your Mac into a remote computer-use host for Claude Code, Codex, or any MCP agent."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+    "cua-computer-server>=0.3.45",
+    "fastmcp>=3.0",
+    "uvicorn>=0.30",
+]
+
+[project.scripts]
+macuse = "macuse.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["macuse"]
