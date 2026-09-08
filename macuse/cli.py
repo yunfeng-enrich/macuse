@@ -68,9 +68,6 @@ def cmd_up(args) -> int:
     tunnel = None
     url = f"http://127.0.0.1:{args.port}"
     if not args.no_tunnel:
-        if not Tunnel.available():
-            print("cloudflared not found. Install with `brew install cloudflared` or pass --no-tunnel.")
-            return 1
         tunnel = Tunnel(args.port)
         print("\nOpening tunnel...")
         url = tunnel.start()

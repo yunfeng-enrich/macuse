@@ -11,13 +11,18 @@ keep-awake, and a permissions preflight.
 ## Quick start
 
 ```
-brew install cloudflared
-uv tool install git+https://github.com/yunfeng-enrich/macuse   # or: pipx install ...
-macuse up
+curl -fsSL https://raw.githubusercontent.com/yunfeng-enrich/macuse/main/install.sh | sh
 ```
 
-`macuse up` prints an MCP endpoint, a token, and the exact `claude mcp add` command.
+That installs uv if needed, installs macuse, fetches cloudflared on first run, and starts
+the server. It prints an MCP endpoint, a token, and the exact `claude mcp add` command.
 Paste that into another machine and ask Claude Code to open Safari.
+
+Already have uv? Skip the installer:
+
+```
+uvx --from git+https://github.com/yunfeng-enrich/macuse macuse up
+```
 
 ## Permissions
 
