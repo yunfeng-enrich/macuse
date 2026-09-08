@@ -39,7 +39,7 @@ def build_mcp(shell: bool, files: bool, width: int | None, height: int | None):
     keep = tool_profiles.allowed(shell=shell, files=files)
     registered = {t.name for t in asyncio.run(mcp.list_tools())}
     for name in registered - keep:
-        mcp.remove_tool(name)
+        mcp.local_provider.remove_tool(name)
     log.info("exposing %d tools (%d hidden)", len(registered & keep), len(registered - keep))
     return mcp
 

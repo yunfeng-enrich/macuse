@@ -5,6 +5,7 @@ import secrets
 import shutil
 import subprocess
 import sys
+import warnings
 from pathlib import Path
 
 from . import __version__, permissions
@@ -33,16 +34,21 @@ def cmd_check(args) -> int:
 
 
 def print_connect_info(url: str, token: str) -> None:
+    endpoint = f"{url}/mcp"
     print()
-    print(f"  MCP endpoint : {url}/mcp")
-    print(f"  Token        : {token}")
+    print("Paste this into Claude Code, Codex, or any MCP-capable agent:")
     print()
-    print("Claude Code:")
-    print(f'  claude mcp add --transport http macuse {url}/mcp --header "Authorization: Bearer {token}"')
+    print(f"  Add an MCP server named \"macuse\" using the streamable HTTP transport at {endpoint}")
+    print(f"  with the header \"Authorization: Bearer {token}\". Then take a screenshot")
+    print("  with it and tell me what is on my Mac's screen.")
     print()
-    print("Codex (~/.codex/config.toml):")
+    print("Or configure it directly:")
+    print()
+    print(f'  claude mcp add --transport http macuse {endpoint} --header "Authorization: Bearer {token}"')
+    print()
+    print("  # ~/.codex/config.toml")
     print("  [mcp_servers.macuse]")
-    print(f'  url = "{url}/mcp"')
+    print(f'  url = "{endpoint}"')
     print(f'  http_headers = {{ Authorization = "Bearer {token}" }}')
     print()
 
@@ -90,6 +96,7 @@ def cmd_up(args) -> int:
 
 def main(argv=None) -> None:
     sys.stdout.reconfigure(line_buffering=True)
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
     logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stderr)
     logging.getLogger("fastmcp").setLevel(logging.WARNING)
     parser = argparse.ArgumentParser(prog="macuse", description="Turn this Mac into a remote computer-use host.")
