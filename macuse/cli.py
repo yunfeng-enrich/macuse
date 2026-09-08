@@ -34,32 +34,25 @@ def cmd_check(args) -> int:
 
 
 def print_connect_info(url: str, token: str, tool_count: int, exposed: list[str], local: str) -> None:
-    from rich.console import Console, Group
-    from rich.panel import Panel
+    from rich.console import Console
     from rich.text import Text
 
-    console = Console()
+    # soft_wrap keeps every command on one logical line, so a terminal copy yields no newlines.
+    console = Console(soft_wrap=True)
     endpoint = f"{url}/{token}/mcp"
 
     console.print()
     console.print(Text.assemble(("  macuse ", "bold green"), ("ready", "green"), ("   ", ""),
                                 (f"{tool_count} tools", "dim"), ("  ·  ", "dim"), (", ".join(exposed), "dim")))
     console.print()
-
-    prompt = Text(f'Add an MCP server named "macuse" using streamable HTTP at {endpoint} '
-                  "then take a screenshot with it and tell me what is on my Mac's screen.", overflow="fold")
-    console.print(Panel(prompt, title="Paste into Claude Code, Codex, or any MCP agent",
-                        title_align="left", border_style="cyan", padding=(0, 1)))
-
-    commands = Group(
-        Text("Claude Code", style="bold"),
-        Text(f"claude mcp add --transport http macuse {endpoint}", style="cyan", overflow="fold"),
-        Text(""),
-        Text("Codex", style="bold"),
-        Text(f"codex mcp add macuse --url {endpoint}", style="cyan", overflow="fold"),
-    )
-    console.print(Panel(commands, title="Or add it yourself", title_align="left", border_style="dim", padding=(0, 1)))
-
+    console.print(Text("  Paste into Claude Code, Codex, or any MCP agent", style="bold cyan"))
+    console.print(Text(f'  Add an MCP server named "macuse" using streamable HTTP at {endpoint} '
+                       "then take a screenshot with it and tell me what is on my Mac's screen."))
+    console.print()
+    console.print(Text("  Or add it yourself", style="bold"))
+    console.print(Text(f"  claude mcp add --transport http macuse {endpoint}", style="cyan"))
+    console.print(Text(f"  codex mcp add macuse --url {endpoint}", style="cyan"))
+    console.print()
     console.print(Text.assemble(("  local ", "dim"), (local, ""), ("   ·   Ctrl-C to stop", "dim")))
     console.print()
 
@@ -109,7 +102,8 @@ def main(argv=None) -> None:
     sys.stdout.reconfigure(line_buffering=True)
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stderr)
-    logging.getLogger("fastmcp").setLevel(logging.WARNING)
+    for noisy in ("fastmcp", "mcp", "uvicorn"):
+        logging.getLogger(noisy).setLevel(logging.WARNING)
     parser = argparse.ArgumentParser(prog="macuse", description="Turn this Mac into a remote computer-use host.")
     parser.add_argument("--version", action="version", version=__version__)
     sub = parser.add_subparsers(dest="cmd", required=True)
