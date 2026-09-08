@@ -19,7 +19,7 @@ def load_or_create_token() -> str:
     if TOKEN_FILE.exists():
         return TOKEN_FILE.read_text().strip()
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-    token = secrets.token_urlsafe(32)
+    token = secrets.token_urlsafe(16)
     TOKEN_FILE.write_text(token)
     TOKEN_FILE.chmod(0o600)
     return token
@@ -33,24 +33,35 @@ def cmd_check(args) -> int:
     return 0 if p.ok else 1
 
 
-def print_connect_info(url: str, token: str) -> None:
-    endpoint = f"{url}/mcp"
-    print()
-    print("Paste this into Claude Code, Codex, or any MCP-capable agent:")
-    print()
-    print(f"  Add an MCP server named \"macuse\" using the streamable HTTP transport at {endpoint}")
-    print(f"  with the header \"Authorization: Bearer {token}\". Then take a screenshot")
-    print("  with it and tell me what is on my Mac's screen.")
-    print()
-    print("Or configure it directly:")
-    print()
-    print(f'  claude mcp add --transport http macuse {endpoint} --header "Authorization: Bearer {token}"')
-    print()
-    print("  # ~/.codex/config.toml")
-    print("  [mcp_servers.macuse]")
-    print(f'  url = "{endpoint}"')
-    print(f'  http_headers = {{ Authorization = "Bearer {token}" }}')
-    print()
+def print_connect_info(url: str, token: str, tool_count: int, exposed: list[str], local: str) -> None:
+    from rich.console import Console, Group
+    from rich.panel import Panel
+    from rich.text import Text
+
+    console = Console()
+    endpoint = f"{url}/{token}/mcp"
+
+    console.print()
+    console.print(Text.assemble(("  macuse ", "bold green"), ("ready", "green"), ("   ", ""),
+                                (f"{tool_count} tools", "dim"), ("  ·  ", "dim"), (", ".join(exposed), "dim")))
+    console.print()
+
+    prompt = Text(f'Add an MCP server named "macuse" using streamable HTTP at {endpoint} '
+                  "then take a screenshot with it and tell me what is on my Mac's screen.", overflow="fold")
+    console.print(Panel(prompt, title="Paste into Claude Code, Codex, or any MCP agent",
+                        title_align="left", border_style="cyan", padding=(0, 1)))
+
+    commands = Group(
+        Text("Claude Code", style="bold"),
+        Text(f"claude mcp add --transport http macuse {endpoint}", style="cyan", overflow="fold"),
+        Text(""),
+        Text("Codex", style="bold"),
+        Text(f"codex mcp add macuse --url {endpoint}", style="cyan", overflow="fold"),
+    )
+    console.print(Panel(commands, title="Or add it yourself", title_align="left", border_style="dim", padding=(0, 1)))
+
+    console.print(Text.assemble(("  local ", "dim"), (local, ""), ("   ·   Ctrl-C to stop", "dim")))
+    console.print()
 
 
 def cmd_up(args) -> int:
@@ -59,13 +70,14 @@ def cmd_up(args) -> int:
     from .server import build_app
 
     p = permissions.check(prompt=True)
-    print(permissions.explain(p))
-    if not p.ok and not args.force:
-        print("\nRefusing to start without permissions. Use --force to start anyway.")
-        return 1
+    if not p.ok:
+        print(permissions.explain(p))
+        if not args.force:
+            print("\nRefusing to start without permissions. Use --force to start anyway.")
+            return 1
 
     token = args.token or load_or_create_token()
-    app = build_app(token, shell=args.allow_shell, files=args.allow_files, width=args.width, height=args.height)
+    app, tool_count = build_app(token, shell=args.allow_shell, files=args.allow_files, width=args.width, height=args.height)
 
     caffeinate = None
     if shutil.which("caffeinate") and not args.no_keep_awake:
@@ -75,12 +87,11 @@ def cmd_up(args) -> int:
     url = f"http://127.0.0.1:{args.port}"
     if not args.no_tunnel:
         tunnel = Tunnel(args.port)
-        print("\nOpening tunnel...")
+        print("Opening tunnel...", flush=True)
         url = tunnel.start()
 
-    print_connect_info(url, token)
     exposed = ["desktop"] + (["shell"] if args.allow_shell else []) + (["files"] if args.allow_files else [])
-    print(f"Exposing: {', '.join(exposed)}. Ctrl-C to stop.\n")
+    print_connect_info(url, token, tool_count, exposed, f"http://127.0.0.1:{args.port}")
 
     try:
         uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="warning")

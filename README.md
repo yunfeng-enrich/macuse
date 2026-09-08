@@ -15,8 +15,15 @@ curl -fsSL https://raw.githubusercontent.com/yunfeng-enrich/macuse/main/install.
 ```
 
 That installs uv if needed, installs macuse, fetches cloudflared on first run, and starts
-the server. It prints an MCP endpoint, a token, and the exact `claude mcp add` command.
-Paste that into another machine and ask Claude Code to open Safari.
+the server. It prints one line to paste into your agent, plus the one-line commands:
+
+```
+claude mcp add --transport http macuse https://<host>/<token>/mcp
+codex mcp add macuse --url https://<host>/<token>/mcp
+```
+
+The token lives in the URL so no client needs custom headers. `Authorization: Bearer <token>`
+against `https://<host>/mcp` works too.
 
 Already have uv? Skip the installer:
 
@@ -48,9 +55,10 @@ screenshots and coordinates for the model, `--port`, `--token`.
 
 ## Security
 
-This is your real desktop on a public URL. The token is the only lock. Keep the
-terminal visible while an agent is connected and Ctrl-C when done. The quick tunnel
-hostname changes on every run.
+This is your real desktop on a public URL. The token is the only lock, and it is in the
+URL, so treat the URL like a password. Keep the terminal visible while an agent is
+connected and Ctrl-C when done. The quick tunnel hostname changes on every run. Delete
+`~/.macuse/token` to rotate the token.
 
 ## Status
 
