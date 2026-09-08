@@ -63,7 +63,7 @@ def build_app(token: str, shell: bool = False, files: bool = False, width: int |
     mcp_app = mcp.http_app(path="/")
 
     async def health(_: Request):
-        return JSONResponse({"status": "ok", "server": "macuse"})
+        return JSONResponse({"status": "ok"})
 
     app = Starlette(routes=[Route("/health", health), Mount("/mcp", mcp_app)], lifespan=mcp_app.lifespan)
     return TokenAuth(app, token), tool_count

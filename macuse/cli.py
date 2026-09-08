@@ -6,23 +6,10 @@ import shutil
 import subprocess
 import sys
 import warnings
-from pathlib import Path
 
 from . import __version__, permissions
 from .tunnel import Tunnel
 
-CONFIG_DIR = Path(os.environ.get("MACUSE_HOME", Path.home() / ".macuse"))
-TOKEN_FILE = CONFIG_DIR / "token"
-
-
-def load_or_create_token() -> str:
-    if TOKEN_FILE.exists():
-        return TOKEN_FILE.read_text().strip()
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-    token = secrets.token_urlsafe(16)
-    TOKEN_FILE.write_text(token)
-    TOKEN_FILE.chmod(0o600)
-    return token
 
 
 def cmd_check(args) -> int:
@@ -69,7 +56,8 @@ def cmd_up(args) -> int:
             print("\nRefusing to start without permissions. Use --force to start anyway.")
             return 1
 
-    token = args.token or load_or_create_token()
+    # Fresh token per run: the tunnel hostname changes each run anyway, and a leaked URL dies on Ctrl-C.
+    token = args.token or secrets.token_urlsafe(16)
     app, tool_count = build_app(token, shell=args.allow_shell, files=args.allow_files, width=args.width, height=args.height)
 
     caffeinate = None
@@ -110,7 +98,7 @@ def main(argv=None) -> None:
 
     up = sub.add_parser("up", help="start the MCP server and expose it")
     up.add_argument("--port", type=int, default=7788)
-    up.add_argument("--token", help="bearer token (default: generated and saved in ~/.macuse/token)")
+    up.add_argument("--token", help="use a fixed token instead of a fresh one per run")
     up.add_argument("--no-tunnel", action="store_true", help="local only, skip cloudflared")
     up.add_argument("--allow-shell", action="store_true", help="also expose computer_run_command")
     up.add_argument("--allow-files", action="store_true", help="also expose file read/write/delete tools")

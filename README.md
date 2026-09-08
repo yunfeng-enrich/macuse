@@ -56,9 +56,9 @@ screenshots and coordinates for the model, `--port`, `--token`.
 ## Security
 
 This is your real desktop on a public URL. The token is the only lock, and it is in the
-URL, so treat the URL like a password. Keep the terminal visible while an agent is
-connected and Ctrl-C when done. The quick tunnel hostname changes on every run. Delete
-`~/.macuse/token` to rotate the token.
+URL, so treat the URL like a password. Both the hostname and the token are new on every
+run, so a leaked URL stops working the moment you Ctrl-C. Keep the terminal visible while
+an agent is connected. Pass `--token` only if you need a fixed one.
 
 ## Status
 
