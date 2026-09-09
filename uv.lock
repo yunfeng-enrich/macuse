@@ -581,6 +581,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/05/cc/753a1d54449f9856645e041db38cf1cf098206c937c64249a82f668769bd/cua_computer_server-0.3.45-py3-none-any.whl", hash = "sha256:d6821d30f15a4c576b6f7dee25171fa45dfcc732fe3c4889894eb233169bdc7f", size = 132208, upload-time = "2026-08-28T01:48:22.264Z" },
 ]
 
+[package.optional-dependencies]
+driver = [
+    { name = "cua-driver" },
+]
+
 [[package]]
 name = "cua-core"
 version = "0.3.1"
@@ -591,6 +596,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f3/82/ec371bde395bbbd326a3467a1702b34ab629defa0cc89bd81ac78507ca5a/cua_core-0.3.1.tar.gz", hash = "sha256:a8fc4204981b9d5b604bd2a34de0bb41cf926309e4dd9f364c827750a86408da", size = 10710, upload-time = "2026-04-15T21:39:49.172Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ed/90/5148998a26671855539e2c3a620f72ef51f83118beffdfb7e77893d4730b/cua_core-0.3.1-py3-none-any.whl", hash = "sha256:9191b8abf5e02ea6bf8ba21237e747d4e3b319f6f24d4e66e04b7606fcc449f6", size = 10239, upload-time = "2026-04-15T21:39:48.265Z" },
+]
+
+[[package]]
+name = "cua-driver"
+version = "0.22.2"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/56/23/e5f4a6d9a799a3fd73c5ff8dd88de377f97864b344493afa5c6c5b409539/cua_driver-0.22.2-py3-none-macosx_13_0_universal2.whl", hash = "sha256:954ad2fc57049abe8117f82ef8f2a7e23aa71f0bf102023c6885baed2468b257", size = 38859550, upload-time = "2026-08-27T18:48:14.272Z" },
+    { url = "https://files.pythonhosted.org/packages/49/86/efc63a991104f051b6b16bcee5c5af169e75b7bb11e2216bfd556ec13e89/cua_driver-0.22.2-py3-none-manylinux_2_31_aarch64.whl", hash = "sha256:aceec765940a4bcfb68891a0642ff8072f5fd220c66fa3fe113a4b1f8c71d1ea", size = 27575564, upload-time = "2026-08-27T18:48:17.136Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/6d/ec8b2dcbd5a59c0597ea4b20c50f63ca96ed6b29e7cf34b16847c244cc23/cua_driver-0.22.2-py3-none-manylinux_2_31_x86_64.whl", hash = "sha256:19f1124ab2670335ca272b66c15c59b12f7579d1e463c422fb2cd5d58c08d0d2", size = 27550099, upload-time = "2026-08-27T18:48:19.729Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/89/97f6bbd9e672c619ef661ac9982f8f46353f877c43df3e8fda4bd63743ce/cua_driver-0.22.2-py3-none-win_amd64.whl", hash = "sha256:93909184d515e3eac9e6a0651731e930b1a9ee6218b6a0aaa8897ea592dee8fa", size = 25363707, upload-time = "2026-08-27T18:48:22.825Z" },
+    { url = "https://files.pythonhosted.org/packages/15/b8/635c087292f33342206276617d3fe4499b27d6ddf171019d6557bc57e5a3/cua_driver-0.22.2-py3-none-win_arm64.whl", hash = "sha256:2a037886a57765c486d4915c28099857bc5b16c0ab09c209068f6bffc69c90fe", size = 23672187, upload-time = "2026-08-27T18:48:25.586Z" },
 ]
 
 [[package]]
@@ -1151,7 +1168,7 @@ name = "macuse"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "cua-computer-server" },
+    { name = "cua-computer-server", extra = ["driver"] },
     { name = "fastmcp" },
     { name = "rich" },
     { name = "uvicorn" },
@@ -1159,7 +1176,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cua-computer-server", specifier = ">=0.3.45" },
+    { name = "cua-computer-server", extras = ["driver"], specifier = ">=0.3.45" },
     { name = "fastmcp", specifier = ">=3.0" },
     { name = "rich", specifier = ">=15.0.0" },
     { name = "uvicorn", specifier = ">=0.30" },

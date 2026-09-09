@@ -2,7 +2,9 @@
 
 import asyncio
 import logging
+import os
 import secrets
+from pathlib import Path
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -42,6 +44,29 @@ class TokenAuth:
             return await self.app(self._rewrite(scope, path), receive, send)
         resp = JSONResponse({"error": "unauthorized"}, status_code=401)
         return await resp(scope, receive, send)
+
+
+DRIVER_SOCKET = Path.home() / "Library/Caches/cua-driver/cua-driver.sock"
+
+
+def detect_backend(requested: str) -> str:
+    """'driver' rides on a running CuaDriver daemon, which owns its own TCC grants,
+    so no permission prompts are needed for this process."""
+    if requested == "auto":
+        return "driver" if DRIVER_SOCKET.exists() else "native"
+    if requested == "driver" and not DRIVER_SOCKET.exists():
+        raise RuntimeError(f"CuaDriver daemon socket not found at {DRIVER_SOCKET}. Start it with `cua-driver serve`.")
+    return requested
+
+
+def configure_backend(backend: str) -> None:
+    # computer_server reads these at import time.
+    if backend == "driver":
+        os.environ["CUA_BACKEND"] = "cua-driver"
+        os.environ["CUA_DRIVER_MODE"] = "daemon"
+        os.environ.setdefault("CUA_DRIVER_SOCKET", str(DRIVER_SOCKET))
+    else:
+        os.environ["CUA_BACKEND"] = "native"
 
 
 def build_mcp(shell: bool, files: bool, width: int | None, height: int | None):

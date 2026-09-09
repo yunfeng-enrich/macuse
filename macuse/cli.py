@@ -47,14 +47,22 @@ def print_connect_info(url: str, token: str, tool_count: int, exposed: list[str]
 def cmd_up(args) -> int:
     import uvicorn
 
-    from .server import build_app
+    from .server import build_app, configure_backend, detect_backend
 
-    p = permissions.check(prompt=True)
-    if not p.ok:
-        print(permissions.explain(p))
-        if not args.force:
-            print("\nRefusing to start without permissions. Use --force to start anyway.")
-            return 1
+    try:
+        backend = detect_backend(args.backend)
+    except RuntimeError as e:
+        print(e)
+        return 1
+    configure_backend(backend)
+
+    if backend == "native":
+        p = permissions.check(prompt=True)
+        if not p.ok:
+            print(permissions.explain(p))
+            if not args.force:
+                print("\nRefusing to start without permissions. Use --force to start anyway.")
+                return 1
 
     # Fresh token per run: the tunnel hostname changes each run anyway, and a leaked URL dies on Ctrl-C.
     token = args.token or secrets.token_urlsafe(16)
@@ -72,6 +80,8 @@ def cmd_up(args) -> int:
         url = tunnel.start()
 
     exposed = ["desktop"] + (["shell"] if args.allow_shell else []) + (["files"] if args.allow_files else [])
+    if backend == "driver":
+        exposed.append("via CuaDriver")
     print_connect_info(url, token, tool_count, exposed, f"http://127.0.0.1:{args.port}")
 
     try:
@@ -104,6 +114,8 @@ def main(argv=None) -> None:
     up.add_argument("--allow-files", action="store_true", help="also expose file read/write/delete tools")
     up.add_argument("--width", type=int, help="scale screenshots and coordinates to this width")
     up.add_argument("--height", type=int, help="scale screenshots and coordinates to this height")
+    up.add_argument("--backend", choices=["auto", "native", "driver"], default="auto",
+                    help="native macOS APIs, or a running CuaDriver daemon (default: auto-detect)")
     up.add_argument("--no-keep-awake", action="store_true")
     up.add_argument("--force", action="store_true", help="start even if permissions are missing")
     up.set_defaults(fn=cmd_up)
