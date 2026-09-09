@@ -5,12 +5,25 @@ description = "Turn your Mac into a remote computer-use host for Claude Code, Co
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
+authors = [{ name = "Yunfeng Bai" }]
+keywords = ["mcp", "computer-use", "macos", "claude-code", "codex", "agent"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
 dependencies = [
     "cua-computer-server[driver]>=0.3.45",
     "fastmcp>=3.0",
     "rich>=15.0.0",
     "uvicorn>=0.30",
 ]
+
+[project.urls]
+Homepage = "https://github.com/yunfeng-enrich/macuse"
+Repository = "https://github.com/yunfeng-enrich/macuse"
+Issues = "https://github.com/yunfeng-enrich/macuse/issues"
 
 [project.scripts]
 macuse = "macuse.cli:main"

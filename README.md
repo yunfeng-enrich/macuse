@@ -1,6 +1,6 @@
 # macuse
 
-![Claude Code on one machine driving a Mac through macuse](demo/demo.gif)
+![Claude Code on one machine driving a Mac through macuse](https://raw.githubusercontent.com/yunfeng-enrich/macuse/main/demo/demo.gif)
 
 *Left: Claude Code, anywhere. Right: a Mac running `macuse up`. The agent reaches it only through the printed URL.*
 
@@ -15,11 +15,16 @@ keep-awake, and a permissions preflight.
 ## Quick start
 
 ```
+uvx macuse up
+```
+
+Or without uv installed:
+
+```
 curl -fsSL https://raw.githubusercontent.com/yunfeng-enrich/macuse/main/install.sh | sh
 ```
 
-That installs uv if needed, installs macuse, fetches cloudflared on first run, and starts
-the server. It prints one line to paste into your agent, plus the one-line commands:
+Either way macuse fetches cloudflared on first run and starts the server. It prints one line to paste into your agent, plus the one-line commands:
 
 ```
 claude mcp add --transport http macuse https://<host>/<token>/mcp
@@ -28,12 +33,6 @@ codex mcp add macuse --url https://<host>/<token>/mcp
 
 The token lives in the URL so no client needs custom headers. `Authorization: Bearer <token>`
 against `https://<host>/mcp` works too.
-
-Already have uv? Skip the installer:
-
-```
-uvx --from git+https://github.com/yunfeng-enrich/macuse macuse up
-```
 
 ## Permissions
 

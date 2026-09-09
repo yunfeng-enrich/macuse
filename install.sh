@@ -15,7 +15,7 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 
 echo "Installing macuse..."
-uv tool install --quiet --force --python 3.12 git+https://github.com/yunfeng-enrich/macuse
+uv tool install --quiet --force --python 3.12 macuse
 export PATH="$HOME/.local/bin:$PATH"
 
 # Reattach stdin to the terminal so Ctrl-C works under `curl | sh`.
