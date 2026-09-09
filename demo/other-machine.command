@@ -2,7 +2,7 @@
 # The agent side of the demo: add the Mac as an MCP server, then let Claude Code use it.
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:$PATH"
 unset CLAUDECODE CLAUDE_CODE_ENTRYPOINT
-printf '\033]50;SetProfile=macuse-demo\a'
+printf '\033]50;SetProfile=Pro\a'
 printf '\033]0;Claude Code\a'
 URL=$(cat /tmp/vm-mcp-url)
 PROMPT="Take a screenshot of my Mac and tell me in one sentence what is on screen. Then open Safari to https://github.com/yunfeng-enrich/macuse and confirm with a screenshot."

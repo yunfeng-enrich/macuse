@@ -1,5 +1,9 @@
 # macuse
 
+![Claude Code on one machine driving a Mac through macuse](demo/demo.gif)
+
+*Left: Claude Code, anywhere. Right: a Mac running `macuse up`. The agent reaches it only through the printed URL.*
+
 Turn your Mac into a remote computer-use host. One command on the Mac, one paste into
 Claude Code or Codex, and the agent can see your screen, click, type, and open apps.
 
