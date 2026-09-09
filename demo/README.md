@@ -1,6 +1,6 @@
 # Demo
 
-`demo.gif` and `demo.mp4` were recorded end to end with no human at either keyboard.
+Scripts used to record the demo end to end with no human at either keyboard.
 
 - The Mac on the right is a macOS VM created with [Lume](https://github.com/trycua/cua/tree/main/libs/lume),
   running `macuse up`. macuse detected the CuaDriver daemon in the image and used it, so
